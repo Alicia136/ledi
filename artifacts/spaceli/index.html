@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+
+    <!-- Primary meta -->
+    <title>Ledi – Finn ledig plass nær deg</title>
+    <meta name="description" content="Ledi er Norges markedsplass for parkering, lagerplass, camping, båtplass og hengerplass. Ledig plass? Tjen penger. Finn ledig plass nær deg på sekunder." />
+    <meta name="keywords" content="parkering leie oslo, leieparkering, lagerplass leie, parkering oslo sentrum, parkering billig, leie parkeringsplass, garasje leie, hengerplass leie, båtplass leie, camping plass, ledi.no" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://ledi.no/" />
+
+    <!-- Open Graph -->
+    <meta property="og:site_name" content="Ledi" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://ledi.no/" />
+    <meta property="og:title" content="Ledi – Finn ledig plass nær deg" />
+    <meta property="og:description" content="Norges markedsplass for parkering, lagerplass, camping og hengerplass. Book på 30 sekunder. Utleier utbetalt samme dag." />
+    <meta property="og:image" content="https://ledi.no/opengraph.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="nb_NO" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@ledi_no" />
+    <meta name="twitter:title" content="Ledi – Finn ledig plass nær deg" />
+    <meta name="twitter:description" content="Norges markedsplass for parkering, lagerplass, camping og hengerplass. Book på 30 sekunder." />
+    <meta name="twitter:image" content="https://ledi.no/opengraph.jpg" />
+
+    <!-- PWA / mobile -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#0D1B2A" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Ledi" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+
+    <!-- JSON-LD structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://ledi.no/#organization",
+          "name": "Ledi",
+          "url": "https://ledi.no",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://ledi.no/favicon.svg"
+          },
+          "description": "Norges markedsplass for parkering, lagerplass, camping, båtplass og hengerplass.",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "NO"
+          },
+          "sameAs": []
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://ledi.no/#website",
+          "url": "https://ledi.no",
+          "name": "Ledi",
+          "publisher": { "@id": "https://ledi.no/#organization" },
+          "inLanguage": "nb-NO",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+              "@type": "EntryPoint",
+              "urlTemplate": "https://ledi.no/?q={search_term_string}"
+            },
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "Service",
+          "@id": "https://ledi.no/#service",
+          "name": "Ledi – Plassmarkedsplass",
+          "provider": { "@id": "https://ledi.no/#organization" },
+          "description": "Book parkering, lagerplass, camping, båtplass og hengerplass direkte fra private utleiere i Norge. Betaling sikret, utleier utbetalt samme dag.",
+          "serviceType": "Markedsplass for utleie av plass",
+          "areaServed": {
+            "@type": "Country",
+            "name": "Norge"
+          },
+          "offers": {
+            "@type": "AggregateOffer",
+            "priceCurrency": "NOK",
+            "offerCount": "847",
+            "description": "Parkering fra 90 kr/dag, lagerplass fra 800 kr/mnd"
+          }
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Hvordan leier jeg en parkeringsplass på Ledi?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Søk etter en plass i ditt område, velg periode og betal direkte i appen. Du får tilgang samme dag. Booking tar under 30 sekunder."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Når får jeg pengene som utleier?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Ledi utbetaler beløpet samme dag som bookingen starter. Ingen ventetid."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Hva koster det å leie ut på Ledi?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Ledi tar 8% fra utleier og 8% serviceavgift fra leietaker. Du setter prisen selv, og Ledi har ingen bindingstid."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Kan jeg leie ut garasjen min på Ledi?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Ja! Du kan leie ut garasje, carport, lagerplass, hengerplass, båtplass og campingplass. Registrer plassen gratis og begynn å tjene penger."
+              }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+
+    <!-- Service Worker -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {});
+        });
+      }
+    </script>
+
+    <!-- Plausible Analytics — loaded only after analytics consent -->
+    <script>
+      (function() {
+        function loadPlausible() {
+          if (document._plausibleLoaded) return;
+          document._plausibleLoaded = true;
+          var s = document.createElement('script');
+          s.defer = true;
+          s.setAttribute('data-domain', 'ledi.no');
+          s.src = 'https://plausible.io/js/script.js';
+          document.head.appendChild(s);
+        }
+        window.enablePlausible = loadPlausible;
+        try {
+          var c = JSON.parse(localStorage.getItem('ledi_cookie_consent') || 'null');
+          if (c && c.analytics) loadPlausible();
+        } catch(e) {}
+      })();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
