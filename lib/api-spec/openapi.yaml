@@ -1,0 +1,2734 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: Spaceli API – norsk parkerings- og lagerplasstjeneste
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: auth
+    description: Authentication
+  - name: spaces
+    description: Space listings
+  - name: bookings
+    description: Bookings
+  - name: reviews
+    description: Reviews
+  - name: admin
+    description: Admin operations
+  - name: smartpris
+    description: Smart pricing data
+  - name: subscriptions
+    description: Subscription rentals
+  - name: waitlist
+    description: Waitlist for occupied spaces
+  - name: alarmer
+    description: Alarm and notification system
+  - name: vipps
+    description: Vipps payment integration
+
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  # AUTH
+  /auth/register:
+    post:
+      operationId: register
+      tags: [auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterInput"
+      responses:
+        "201":
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Validation error
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+      responses:
+        "200":
+          description: Logged in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+
+  /auth/profil:
+    put:
+      operationId: updateProfil
+      tags: [auth]
+      summary: Update user profile fields
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProfilInput"
+      responses:
+        "200":
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Logout
+      responses:
+        "200":
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /auth/forgot-password:
+    post:
+      operationId: forgotPassword
+      tags: [auth]
+      summary: Request password reset email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ForgotPasswordInput"
+      responses:
+        "200":
+          description: Reset email sent (always returns OK to prevent enumeration)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /auth/reset-password:
+    post:
+      operationId: resetPassword
+      tags: [auth]
+      summary: Reset password using token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResetPasswordInput"
+      responses:
+        "200":
+          description: Password updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "400":
+          description: Invalid or expired token
+
+  /auth/verify-email:
+    get:
+      operationId: verifyEmail
+      tags: [auth]
+      summary: Verify email address via token
+      parameters:
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Email verified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "400":
+          description: Invalid or expired token
+
+  /auth/resend-verification:
+    post:
+      operationId: resendVerification
+      tags: [auth]
+      summary: Resend email verification link
+      responses:
+        "200":
+          description: Verification email sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  # SPACES
+  /spaces:
+    get:
+      operationId: listSpaces
+      tags: [spaces]
+      summary: List spaces with optional filters
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: string
+          description: "Filter by type: parking, storage, business, ev"
+        - in: query
+          name: city
+          schema:
+            type: string
+        - in: query
+          name: smartPris
+          schema:
+            type: boolean
+        - in: query
+          name: natteparkering
+          schema:
+            type: boolean
+          description: "Filter to only show night parking spaces (22:00-08:00)"
+        - in: query
+          name: helge
+          schema:
+            type: boolean
+          description: "Filter to only show weekend-available spaces"
+        - in: query
+          name: arrangement
+          schema:
+            type: boolean
+          description: "Filter to only show spaces with arrangement mode enabled"
+        - in: query
+          name: sort
+          schema:
+            type: string
+          description: "billigst | best | naermest | smartpris"
+        - in: query
+          name: limit
+          schema:
+            type: integer
+        - in: query
+          name: offset
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of spaces
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SpaceListResponse"
+
+    post:
+      operationId: createSpace
+      tags: [spaces]
+      summary: Create a new space listing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SpaceInput"
+      responses:
+        "201":
+          description: Space created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Space"
+
+  /spaces/{id}:
+    get:
+      operationId: getSpace
+      tags: [spaces]
+      summary: Get a single space
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Space detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SpaceDetail"
+        "404":
+          description: Not found
+
+    patch:
+      operationId: updateSpace
+      tags: [spaces]
+      summary: Update a space
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SpaceUpdate"
+      responses:
+        "200":
+          description: Updated space
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Space"
+
+    delete:
+      operationId: deleteSpace
+      tags: [spaces]
+      summary: Delete a space
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /spaces/my:
+    get:
+      operationId: getMySpaces
+      tags: [spaces]
+      summary: Get current user's spaces
+      responses:
+        "200":
+          description: User's spaces
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Space"
+
+  /storage/uploads/request-url:
+    post:
+      operationId: requestUploadUrl
+      tags: [spaces]
+      summary: Request a presigned upload URL
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, size, contentType]
+              properties:
+                name: { type: string }
+                size: { type: integer }
+                contentType: { type: string }
+      responses:
+        '200':
+          description: Presigned upload URL
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [uploadURL, objectPath]
+                properties:
+                  uploadURL: { type: string }
+                  objectPath: { type: string }
+
+  /spaces/{id}/bilde:
+    post:
+      operationId: addSpaceBilde
+      tags: [spaces]
+      summary: Save uploaded image path to a space
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [objectPath]
+              properties:
+                objectPath: { type: string }
+      responses:
+        '200':
+          description: Image saved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                  bildeSti: { type: string }
+
+  /spaces/{id}/approve:
+    post:
+      operationId: approveSpace
+      tags: [spaces]
+      summary: Admin approve a space
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Space approved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Space"
+
+  # BOOKINGS
+  /bookings:
+    get:
+      operationId: listBookings
+      tags: [bookings]
+      summary: List bookings for the current user
+      parameters:
+        - in: query
+          name: role
+          schema:
+            type: string
+          description: "leietaker | utleier"
+        - in: query
+          name: status
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of bookings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Booking"
+
+    post:
+      operationId: createBooking
+      tags: [bookings]
+      summary: Create a booking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookingInput"
+      responses:
+        "201":
+          description: Booking created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+
+  /bookings/{id}:
+    get:
+      operationId: getBooking
+      tags: [bookings]
+      summary: Get booking detail
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Booking detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+
+  /bookings/{id}/cancel:
+    post:
+      operationId: cancelBooking
+      tags: [bookings]
+      summary: Cancel a booking
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Cancelled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+
+  /bookings/{id}/confirm:
+    post:
+      operationId: confirmBooking
+      tags: [bookings]
+      summary: Confirm a reserved booking (simulates Vipps payment)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Confirmed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+
+  /spaces/{id}/status:
+    get:
+      operationId: getSpaceLiveStatus
+      tags: [spaces]
+      summary: Get real-time occupancy status for a space
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Live status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SpaceLiveStatus"
+
+  # AVAILABILITY
+  /spaces/{id}/schedule:
+    get:
+      operationId: getSpaceSchedule
+      tags: [spaces]
+      summary: Get weekly availability schedule for a space
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Weekly schedule (7 days)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ScheduleDay"
+    put:
+      operationId: updateSpaceSchedule
+      tags: [spaces]
+      summary: Set weekly availability schedule for a space
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/ScheduleDayInput"
+      responses:
+        "200":
+          description: Updated schedule
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ScheduleDay"
+
+  /spaces/{id}/available-times:
+    get:
+      operationId: getAvailableTimes
+      tags: [spaces]
+      summary: Get available time slots for a specific date
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: date
+          required: true
+          schema:
+            type: string
+          description: "ISO date string: YYYY-MM-DD"
+      responses:
+        "200":
+          description: Available time slots
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AvailableTimesResponse"
+
+  /spaces/{id}/blocked-dates:
+    get:
+      operationId: getBlockedDates
+      tags: [spaces]
+      summary: Get blocked dates for a space
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Blocked dates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BlockedDate"
+    post:
+      operationId: addBlockedDate
+      tags: [spaces]
+      summary: Block a specific date
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BlockedDateInput"
+      responses:
+        "201":
+          description: Blocked date added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlockedDate"
+
+  /spaces/{id}/blocked-dates/{dateId}:
+    delete:
+      operationId: deleteBlockedDate
+      tags: [spaces]
+      summary: Remove a blocked date
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: dateId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Removed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  # REVIEWS
+  /spaces/{id}/reviews:
+    get:
+      operationId: listReviews
+      tags: [reviews]
+      summary: Get reviews for a space
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Reviews
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Review"
+
+    post:
+      operationId: createReview
+      tags: [reviews]
+      summary: Submit a review
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReviewInput"
+      responses:
+        "201":
+          description: Review submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Review"
+
+  # SMART PRIS
+  /smartpris:
+    get:
+      operationId: getSmartPrisData
+      tags: [smartpris]
+      summary: Get Smart Pris data for all districts
+      responses:
+        "200":
+          description: Smart Pris districts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SmartPrisDistrict"
+
+  /smartpris/suggest:
+    get:
+      operationId: getSmartPrisSuggestion
+      tags: [smartpris]
+      summary: Get price suggestion for a district and type
+      parameters:
+        - in: query
+          name: district
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: type
+          required: true
+          schema:
+            type: string
+          description: "garasje | parkering"
+      responses:
+        "200":
+          description: Price suggestion
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SmartPrisSuggestion"
+
+  /smartpris/dynamic:
+    get:
+      operationId: getSmartPrisDynamic
+      tags: [smartpris]
+      summary: Get dynamic Smart Pris 2.0 factors for a district
+      parameters:
+        - in: query
+          name: bydel
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: type
+          schema:
+            type: string
+          description: "garasje | parkering | camping | baatplass | henger"
+      responses:
+        "200":
+          description: Dynamic Smart Pris data with real-time factors
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SmartPrisDynamic"
+
+  # ADMIN & STATS
+  /admin/stats:
+    get:
+      operationId: getAdminStats
+      tags: [admin]
+      summary: Admin dashboard statistics
+      responses:
+        "200":
+          description: Admin stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminStats"
+
+  /admin/spaces:
+    get:
+      operationId: listAdminSpaces
+      tags: [admin]
+      summary: List all spaces for admin (including pending)
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+          description: "pending | active | all"
+      responses:
+        "200":
+          description: All spaces
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Space"
+
+  /admin/bookings:
+    get:
+      operationId: listAdminBookings
+      tags: [admin]
+      summary: List all bookings for admin
+      responses:
+        "200":
+          description: All bookings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Booking"
+
+  /admin/dac7/{year}:
+    get:
+      operationId: getDac7Rapport
+      tags: [admin]
+      summary: Hent DAC7-rapportdata for et gitt år
+      parameters:
+        - in: path
+          name: year
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: DAC7 rapport
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Dac7Rapport"
+
+  /admin/dac7/{year}/send-aarsoppgaver:
+    post:
+      operationId: sendDac7Aarsoppgaver
+      tags: [admin]
+      summary: Send årsoppgave på e-post til alle utleiere for et gitt år
+      parameters:
+        - in: path
+          name: year
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Resultat av sending
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SendAarsoppgaverResult"
+
+  # DASHBOARD / WOW ENDPOINTS
+  /stats/summary:
+    get:
+      operationId: getStatsSummary
+      tags: [spaces]
+      summary: Public platform statistics
+      responses:
+        "200":
+          description: Platform stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformStats"
+
+  /spaces/featured:
+    get:
+      operationId: getFeaturedSpaces
+      tags: [spaces]
+      summary: Get featured/top-rated spaces
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Featured spaces
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Space"
+
+  /dashboard/owner:
+    get:
+      operationId: getOwnerDashboard
+      tags: [bookings]
+      summary: Owner dashboard summary (earnings, bookings, occupancy)
+      responses:
+        "200":
+          description: Owner dashboard
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OwnerDashboard"
+
+  # SUBSCRIPTIONS
+  /subscriptions:
+    post:
+      operationId: createSubscription
+      tags: [subscriptions]
+      summary: Create a new subscription rental
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubscriptionInput"
+      responses:
+        "201":
+          description: Subscription created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+        "400":
+          description: Validation error
+        "409":
+          description: Space already has active subscription
+    get:
+      operationId: listSubscriptions
+      tags: [subscriptions]
+      summary: List subscriptions for current user
+      parameters:
+        - in: query
+          name: role
+          schema:
+            type: string
+            description: "leietaker | utleier"
+      responses:
+        "200":
+          description: List of subscriptions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Subscription"
+
+  /subscriptions/{id}:
+    get:
+      operationId: getSubscription
+      tags: [subscriptions]
+      summary: Get a single subscription
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Subscription
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+        "404":
+          description: Not found
+
+  /subscriptions/{id}/cancel:
+    post:
+      operationId: cancelSubscription
+      tags: [subscriptions]
+      summary: Cancel a subscription (leietaker)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Cancelled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+        "403":
+          description: Not authorized
+        "404":
+          description: Not found
+
+  # LANSERINGSLISTE
+  /lanseringsliste/antall:
+    get:
+      operationId: getLanseringslisteAntall
+      tags: [lanseringsliste]
+      summary: Get count of launch waitlist signups
+      responses:
+        '200':
+          description: Count
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [antall]
+                properties:
+                  antall: { type: integer }
+
+  /lanseringsliste:
+    post:
+      operationId: joinLanseringsliste
+      tags: [lanseringsliste]
+      summary: Join the launch waitlist
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [epost]
+              properties:
+                epost: { type: string, format: email }
+      responses:
+        '201':
+          description: Joined
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                  antall: { type: integer }
+        '409':
+          description: Already registered
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error: { type: string }
+                  antall: { type: integer }
+
+  # WAITLIST
+  /waitlist:
+    post:
+      operationId: joinWaitlist
+      tags: [waitlist]
+      summary: Join the waitlist for a space
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WaitlistInput"
+      responses:
+        "201":
+          description: Added to waitlist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WaitlistEntry"
+        "400":
+          description: Validation error
+        "409":
+          description: Already on waitlist or waitlist full
+
+    get:
+      operationId: listWaitlist
+      tags: [waitlist]
+      summary: List waitlist entries for current user
+      parameters:
+        - in: query
+          name: role
+          schema:
+            type: string
+            description: "leietaker | utleier"
+      responses:
+        "200":
+          description: List of waitlist entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WaitlistEntry"
+
+  /waitlist/{id}:
+    delete:
+      operationId: leaveWaitlist
+      tags: [waitlist]
+      summary: Leave waitlist (remove own entry)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Removed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "403":
+          description: Not authorized
+        "404":
+          description: Not found
+
+  # VIPPS
+  /vipps/initiate:
+    post:
+      operationId: vippsInitiate
+      tags: [vipps]
+      summary: Initiate Vipps payment for a booking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VippsInitiateInput"
+      responses:
+        "200":
+          description: Payment initiated (or mock mode)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VippsInitiateResult"
+        "400":
+          description: Booking not in correct state
+        "403":
+          description: Not your booking
+        "404":
+          description: Booking not found
+
+  /vipps/callback:
+    post:
+      operationId: vippsCallback
+      tags: [vipps]
+      summary: Vipps payment callback webhook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VippsCallbackBody"
+      responses:
+        "200":
+          description: Callback handled
+        "401":
+          description: Invalid callback token
+        "404":
+          description: Booking not found
+
+  /telemetrics/open:
+    post:
+      operationId: telemetricsOpen
+      tags: [telemetrics]
+      summary: Send open command to a Telemetrics-controlled gate/port
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [bookingId]
+              properties:
+                bookingId:
+                  type: integer
+      responses:
+        "200":
+          description: Gate open command sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TelemetricsOpenResult"
+        "400":
+          description: Booking not confirmed, access not yet started, or space has no Telemetrics
+        "401":
+          description: Not authenticated
+        "404":
+          description: Booking not found
+
+  /unloc/open:
+    post:
+      operationId: unlocOpen
+      tags: [unloc]
+      summary: Open an Unloc smart lock for an active confirmed booking
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [bookingId]
+              properties:
+                bookingId:
+                  type: integer
+      responses:
+        "200":
+          description: Lock opened successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnlocOpenResult"
+        "400":
+          description: Booking not confirmed, access not yet started, or space has no smart lock
+        "401":
+          description: Not authenticated
+        "404":
+          description: Booking not found
+
+  /vipps/payout/{bookingId}/retry:
+    post:
+      operationId: vippsPayoutRetry
+      tags: [vipps]
+      summary: Manually trigger payout retry for a booking (admin)
+      parameters:
+        - in: path
+          name: bookingId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Retry triggered
+        "403":
+          description: Admin only
+        "404":
+          description: Booking not found
+
+  # BORETTSLAG
+  /borettslag:
+    post:
+      operationId: createBorettslag
+      tags: [borettslag]
+      summary: Create a new borettslag
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BorettslagInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BorettslagCreated"
+
+  /borettslag/mine:
+    get:
+      operationId: getMyBorettslag
+      tags: [borettslag]
+      summary: Get current user's borettslag
+      security: [{bearerAuth: []}]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Borettslag"
+
+  /borettslag/{id}:
+    get:
+      operationId: getBorettslag
+      tags: [borettslag]
+      summary: Get borettslag by ID
+      security: [{bearerAuth: []}]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Borettslag"
+
+  /borettslag/{id}/plasser:
+    post:
+      operationId: bulkRegisterBorettslagPlasser
+      tags: [borettslag]
+      summary: Bulk register spaces for borettslag
+      security: [{bearerAuth: []}]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BorettslagPlasserInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  opprettet:
+                    type: integer
+                  plasser:
+                    type: array
+                    items:
+                      type: integer
+    get:
+      operationId: listBorettslagPlasser
+      tags: [borettslag]
+      summary: List spaces for borettslag
+      security: [{bearerAuth: []}]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Space"
+
+  /borettslag/{id}/rapport:
+    get:
+      operationId: getBorettslagRapport
+      tags: [borettslag]
+      summary: Get monthly earnings report for borettslag
+      security: [{bearerAuth: []}]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BorettslagRapport"
+
+  /borettslag/{id}/beboere:
+    get:
+      operationId: listBorettslagBeboere
+      tags: [borettslag]
+      summary: List residents for borettslag
+      security: [{bearerAuth: []}]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BorettslagMedlem"
+    post:
+      operationId: addBorettslagBeboer
+      tags: [borettslag]
+      summary: Add a resident to borettslag
+      security: [{bearerAuth: []}]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [epost]
+              properties:
+                epost:
+                  type: string
+                leilighetsnummer:
+                  type: ["string", "null"]
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BorettslagMedlem"
+
+  /borettslag/{id}/beboere/{beboerId}:
+    delete:
+      operationId: removeBorettslagBeboer
+      tags: [borettslag]
+      summary: Remove a resident from borettslag
+      security: [{bearerAuth: []}]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: beboerId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OkResult"
+
+  # ALARMER & VARSLER
+  /alarmer:
+    get:
+      operationId: listAlarmer
+      tags: [alarmer]
+      summary: List user alarms
+      security: [{bearerAuth: []}]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Alarm"
+    post:
+      operationId: createAlarm
+      tags: [alarmer]
+      summary: Create a new alarm
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AlarmInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Alarm"
+
+  /alarmer/{id}:
+    delete:
+      operationId: deleteAlarm
+      tags: [alarmer]
+      summary: Delete an alarm
+      security: [{bearerAuth: []}]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OkResult"
+
+  /varsler:
+    get:
+      operationId: listVarsler
+      tags: [alarmer]
+      summary: List user notifications
+      security: [{bearerAuth: []}]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Varsel"
+
+  /varsler/{id}/les:
+    post:
+      operationId: markVarselLest
+      tags: [alarmer]
+      summary: Mark notification as read
+      security: [{bearerAuth: []}]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OkResult"
+
+  /varsler/les-alle:
+    post:
+      operationId: markAlleVarslerLest
+      tags: [alarmer]
+      summary: Mark all notifications as read
+      security: [{bearerAuth: []}]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OkResult"
+
+components:
+  schemas:
+    OkResult:
+      type: object
+      required: [ok]
+      properties:
+        ok:
+          type: boolean
+
+    Borettslag:
+      type: object
+      required: [id, navn, kontaktEpost, adresse, postnummer, by, styrelederUserId, opprettetDato]
+      properties:
+        id:
+          type: integer
+        navn:
+          type: string
+        orgnummer:
+          type: ["string", "null"]
+        kontaktEpost:
+          type: string
+        bankkontonummer:
+          type: ["string", "null"]
+        adresse:
+          type: string
+        postnummer:
+          type: string
+        by:
+          type: string
+        styrelederUserId:
+          type: integer
+        antallLeiligheter:
+          type: ["integer", "null"]
+        opprettetDato:
+          type: string
+
+    BorettslagInput:
+      type: object
+      required: [styreleiderNavn, styreleiderEpost, passord, navn, kontaktEpost, adresse, postnummer, by]
+      properties:
+        styreleiderNavn:
+          type: string
+        styreleiderEpost:
+          type: string
+        passord:
+          type: string
+        navn:
+          type: string
+        orgnummer:
+          type: ["string", "null"]
+        kontaktEpost:
+          type: string
+        bankkontonummer:
+          type: ["string", "null"]
+        adresse:
+          type: string
+        postnummer:
+          type: string
+        by:
+          type: string
+        antallLeiligheter:
+          type: ["integer", "null"]
+
+    BorettslagCreated:
+      type: object
+      required: [borettslag, token, bruker]
+      properties:
+        borettslag:
+          $ref: "#/components/schemas/Borettslag"
+        token:
+          type: string
+        bruker:
+          $ref: "#/components/schemas/User"
+
+    BorettslagPlasserInput:
+      type: object
+      required: [plasser]
+      properties:
+        kunBeboere:
+          type: boolean
+        plasser:
+          type: array
+          items:
+            type: object
+            required: [tittel]
+            properties:
+              tittel:
+                type: string
+              type:
+                type: string
+              prisPerMaaned:
+                type: ["number", "null"]
+              prisPerDag:
+                type: ["number", "null"]
+              prisPerTime:
+                type: ["number", "null"]
+
+    BorettslagRapport:
+      type: object
+      required: [antallPlasser, totalt, sisteManedInntekt, maaneder]
+      properties:
+        borettslagNavn:
+          type: string
+        antallPlasser:
+          type: integer
+        totalt:
+          type: number
+        sisteManedInntekt:
+          type: number
+        maaneder:
+          type: array
+          items:
+            type: object
+            properties:
+              maaned:
+                type: string
+              inntekt:
+                type: number
+              bookinger:
+                type: integer
+
+    BorettslagMedlem:
+      type: object
+      required: [id, borettslagId, epost, erAktiv, lagtTilDato]
+      properties:
+        id:
+          type: integer
+        borettslagId:
+          type: integer
+        userId:
+          type: ["integer", "null"]
+        epost:
+          type: string
+        leilighetsnummer:
+          type: ["string", "null"]
+        erAktiv:
+          type: boolean
+        lagtTilDato:
+          type: string
+
+    HealthStatus:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+
+    MessageResponse:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+
+    # VIPPS
+    VippsInitiateInput:
+      type: object
+      required: [bookingId]
+      properties:
+        bookingId:
+          type: integer
+
+    VippsInitiateResult:
+      type: object
+      required: [mock]
+      properties:
+        mock:
+          type: boolean
+        orderId:
+          type: ["string", "null"]
+        redirectUrl:
+          type: ["string", "null"]
+
+    VippsCallbackBody:
+      type: object
+      properties:
+        orderId:
+          type: string
+        transactionInfo:
+          type: object
+          properties:
+            status:
+              type: string
+            amount:
+              type: integer
+
+    # AUTH
+    RegisterInput:
+      type: object
+      required: [navn, epost, passord, rolle]
+      properties:
+        navn:
+          type: string
+        epost:
+          type: string
+        passord:
+          type: string
+        rolle:
+          type: string
+          description: "leietaker | utleier"
+        vippsNummer:
+          type: ["string", "null"]
+        personnummer:
+          type: ["string", "null"]
+          description: "Personnummer eller org.nr. – påkrevd for utleiere (DAC7)"
+
+    LoginInput:
+      type: object
+      required: [epost, passord]
+      properties:
+        epost:
+          type: string
+        passord:
+          type: string
+
+    AuthResponse:
+      type: object
+      required: [token, user]
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+
+    User:
+      type: object
+      required: [id, navn, epost, rolle]
+      properties:
+        id:
+          type: integer
+        navn:
+          type: string
+        epost:
+          type: string
+        rolle:
+          type: string
+        bankidVerifisert:
+          type: boolean
+        emailVerifisert:
+          type: boolean
+        vippsNummer:
+          type: ["string", "null"]
+        personnummer:
+          type: ["string", "null"]
+        kontonummer:
+          type: ["string", "null"]
+        opprettetDato:
+          type: string
+
+    UpdateProfilInput:
+      type: object
+      properties:
+        personnummer:
+          type: ["string", "null"]
+        kontonummer:
+          type: ["string", "null"]
+        vippsNummer:
+          type: ["string", "null"]
+
+    ForgotPasswordInput:
+      type: object
+      required: [epost]
+      properties:
+        epost:
+          type: string
+
+    ResetPasswordInput:
+      type: object
+      required: [token, nyttPassord]
+      properties:
+        token:
+          type: string
+        nyttPassord:
+          type: string
+
+    # SPACES
+    Space:
+      type: object
+      required: [id, tittel, type, adresse, by, postnummer, breddegrad, lengdegrad, erAktiv, prisModell]
+      properties:
+        id:
+          type: integer
+        eierId:
+          type: integer
+        tittel:
+          type: string
+        type:
+          type: string
+          description: "parking | storage | business | ev | camping | bobil | bobil_strom | bobil_full | gaard | baatplass"
+        adresse:
+          type: string
+        by:
+          type: string
+        postnummer:
+          type: string
+        breddegrad:
+          type: number
+        lengdegrad:
+          type: number
+        beskrivelse:
+          type: ["string", "null"]
+        fasiliteter:
+          type: array
+          items:
+            type: string
+        erAktiv:
+          type: boolean
+        erGodkjent:
+          type: boolean
+        prisModell:
+          type: string
+          description: "fri | smart"
+        smartPrisBydel:
+          type: ["string", "null"]
+        tilbyrAbonnement:
+          type: boolean
+        abonnementsPris:
+          type: ["number", "null"]
+        minBindingstid:
+          type: ["integer", "null"]
+        priser:
+          $ref: "#/components/schemas/PriceGrid"
+        snittRangering:
+          type: ["number", "null"]
+        antallAnmeldelser:
+          type: integer
+        eierNavn:
+          type: ["string", "null"]
+        bildeSti:
+          type: ["string", "null"]
+        opprettetDato:
+          type: string
+        antallVenter:
+          type: integer
+          description: "Number of people on the waitlist for this space"
+        antallPlasser:
+          type: ["integer", "null"]
+        maksLengde:
+          type: ["string", "null"]
+        stromAmp:
+          type: ["string", "null"]
+        vannTilkobling:
+          type: boolean
+        tommestasjon:
+          type: boolean
+        overnattingTillatt:
+          type: boolean
+        lavsesonPris:
+          type: ["number", "null"]
+        hoysesonPris:
+          type: ["number", "null"]
+        antallBilder:
+          type: integer
+          description: "Number of photos uploaded by the owner"
+        harUnloc:
+          type: boolean
+        harTelemetrics:
+          type: boolean
+        lediVerifisert:
+          type: boolean
+          description: "True when the space meets all Ledi Verifisert criteria"
+        helgeMode:
+          type: boolean
+          description: "Space is only available on weekends"
+        helgePris:
+          type: ["number", "null"]
+          description: "Weekend price per hour (if different from weekday)"
+        arrangementModus:
+          type: boolean
+          description: "Owner has opted in to event-based pricing notifications"
+        arrangementPris:
+          type: ["number", "null"]
+          description: "Price per hour during events"
+
+    SpaceDetail:
+      type: object
+      required: [space, reviews]
+      properties:
+        space:
+          $ref: "#/components/schemas/Space"
+        reviews:
+          type: array
+          items:
+            $ref: "#/components/schemas/Review"
+
+    SpaceListResponse:
+      type: object
+      required: [spaces, total]
+      properties:
+        spaces:
+          type: array
+          items:
+            $ref: "#/components/schemas/Space"
+        total:
+          type: integer
+
+    PriceGrid:
+      type: object
+      properties:
+        natt:
+          type: ["number", "null"]
+        time:
+          type: ["number", "null"]
+        dag:
+          type: ["number", "null"]
+        uke:
+          type: ["number", "null"]
+        maaned:
+          type: ["number", "null"]
+
+    SpaceInput:
+      type: object
+      required: [tittel, type, adresse, by, postnummer, breddegrad, lengdegrad, prisModell]
+      properties:
+        tittel:
+          type: string
+        type:
+          type: string
+        adresse:
+          type: string
+        by:
+          type: string
+        postnummer:
+          type: string
+        breddegrad:
+          type: number
+        lengdegrad:
+          type: number
+        beskrivelse:
+          type: ["string", "null"]
+        fasiliteter:
+          type: array
+          items:
+            type: string
+        prisModell:
+          type: string
+        smartPrisBydel:
+          type: ["string", "null"]
+        tilbyrAbonnement:
+          type: boolean
+        abonnementsPris:
+          type: ["number", "null"]
+        minBindingstid:
+          type: ["integer", "null"]
+        priser:
+          $ref: "#/components/schemas/PriceGrid"
+        antallPlasser:
+          type: ["integer", "null"]
+        maksLengde:
+          type: ["string", "null"]
+        stromAmp:
+          type: ["string", "null"]
+        vannTilkobling:
+          type: boolean
+        tommestasjon:
+          type: boolean
+        overnattingTillatt:
+          type: boolean
+        lavsesonPris:
+          type: ["number", "null"]
+        hoysesonPris:
+          type: ["number", "null"]
+        harUnloc:
+          type: boolean
+        unlocLockId:
+          type: ["string", "null"]
+        harTelemetrics:
+          type: boolean
+        telemetricsPortId:
+          type: ["string", "null"]
+        helgeMode:
+          type: boolean
+        helgePris:
+          type: ["number", "null"]
+        arrangementModus:
+          type: boolean
+        arrangementPris:
+          type: ["number", "null"]
+
+    SpaceUpdate:
+      type: object
+      properties:
+        tittel:
+          type: string
+        beskrivelse:
+          type: ["string", "null"]
+        fasiliteter:
+          type: array
+          items:
+            type: string
+        erAktiv:
+          type: boolean
+        prisModell:
+          type: string
+        smartPrisBydel:
+          type: ["string", "null"]
+        priser:
+          $ref: "#/components/schemas/PriceGrid"
+        antallPlasser:
+          type: ["integer", "null"]
+        maksLengde:
+          type: ["string", "null"]
+        stromAmp:
+          type: ["string", "null"]
+        vannTilkobling:
+          type: boolean
+        tommestasjon:
+          type: boolean
+        overnattingTillatt:
+          type: boolean
+        lavsesonPris:
+          type: ["number", "null"]
+        hoysesonPris:
+          type: ["number", "null"]
+        harUnloc:
+          type: boolean
+          description: "True if this space has an Unloc smart lock installed"
+        unlocLockId:
+          type: ["string", "null"]
+          description: "Unloc lock identifier"
+        harTelemetrics:
+          type: boolean
+          description: "True if this space has Telemetrics port/gate control installed"
+        telemetricsPortId:
+          type: ["string", "null"]
+          description: "Telemetrics port controller identifier"
+
+    # BOOKINGS
+    Booking:
+      type: object
+      required: [id, plassId, leietakerId, startDato, sluttDato, periodetype, totalPris, status]
+      properties:
+        id:
+          type: integer
+        plassId:
+          type: integer
+        leietakerId:
+          type: integer
+        startDato:
+          type: string
+        sluttDato:
+          type: string
+        periodetype:
+          type: string
+          description: "time | dag | uke | maaned"
+        totalPris:
+          type: number
+        utleierBelop:
+          type: number
+        spaceliGebyr:
+          type: number
+        status:
+          type: string
+          description: "reserved | pending | confirmed | cancelled | completed | expired"
+        lockedUntil:
+          type: ["string", "null"]
+          description: "ISO timestamp — booking is reserved until this time"
+        confirmedAt:
+          type: ["string", "null"]
+        spaseTittel:
+          type: ["string", "null"]
+        spaseAdresse:
+          type: ["string", "null"]
+        spaseHarUnloc:
+          type: boolean
+          description: "True if the booked space has an Unloc smart lock"
+        spaseHarTelemetrics:
+          type: boolean
+          description: "True if the booked space has Telemetrics port control"
+        unlocTilgangGranted:
+          type: boolean
+          description: "True if Unloc access has been granted for this booking"
+        telemetricsTilgangGranted:
+          type: boolean
+          description: "True if Telemetrics gate access has been granted for this booking"
+        tilgangskode:
+          type: ["string", "null"]
+          description: "6-digit digital PIN code generated at booking confirmation"
+        leietakerNavn:
+          type: ["string", "null"]
+        opprettetDato:
+          type: string
+
+    TelemetricsOpenResult:
+      type: object
+      required: [success, melding, portId, tilgangUtloper]
+      properties:
+        success:
+          type: boolean
+        melding:
+          type: string
+        portId:
+          type: string
+        apnesIMs:
+          type: integer
+        tilgangUtloper:
+          type: string
+
+    UnlocOpenResult:
+      type: object
+      required: [success, melding, lockId, tilgangUtloper]
+      properties:
+        success:
+          type: boolean
+        melding:
+          type: string
+        lockId:
+          type: string
+        tilgangUtloper:
+          type: string
+
+    SpaceLiveStatus:
+      type: object
+      required: [spaceId, status]
+      properties:
+        spaceId:
+          type: integer
+        status:
+          type: string
+          description: "available | reserved | booked | closed"
+        currentBooking:
+          type: ["object", "null"]
+          properties:
+            id:
+              type: integer
+            startDato:
+              type: string
+            sluttDato:
+              type: string
+            lockedUntil:
+              type: ["string", "null"]
+        nextBooking:
+          type: ["object", "null"]
+          properties:
+            id:
+              type: integer
+            startDato:
+              type: string
+            sluttDato:
+              type: string
+
+    BookingInput:
+      type: object
+      required: [plassId, startDato, sluttDato, periodetype]
+      properties:
+        plassId:
+          type: integer
+        startDato:
+          type: string
+        sluttDato:
+          type: string
+        periodetype:
+          type: string
+
+    # REVIEWS
+    Review:
+      type: object
+      required: [id, bookingId, rangering]
+      properties:
+        id:
+          type: integer
+        bookingId:
+          type: integer
+        rangering:
+          type: integer
+        kommentar:
+          type: ["string", "null"]
+        anmelderNavn:
+          type: ["string", "null"]
+        opprettetDato:
+          type: string
+
+    ReviewInput:
+      type: object
+      required: [bookingId, rangering]
+      properties:
+        bookingId:
+          type: integer
+        rangering:
+          type: integer
+          minimum: 1
+          maximum: 5
+        kommentar:
+          type: ["string", "null"]
+
+    # AVAILABILITY
+    ScheduleDay:
+      type: object
+      required: [id, plassId, dagINummer, fraTid, tilTid, erTilgjengelig]
+      properties:
+        id:
+          type: integer
+        plassId:
+          type: integer
+        dagINummer:
+          type: integer
+          description: "0=Man 1=Tir 2=Ons 3=Tor 4=Fre 5=Lør 6=Søn"
+        fraTid:
+          type: string
+          description: "HH:MM"
+        tilTid:
+          type: string
+          description: "HH:MM"
+        erTilgjengelig:
+          type: boolean
+
+    ScheduleDayInput:
+      type: object
+      required: [dagINummer, erTilgjengelig]
+      properties:
+        dagINummer:
+          type: integer
+        fraTid:
+          type: string
+        tilTid:
+          type: string
+        erTilgjengelig:
+          type: boolean
+
+    AvailableTimesResponse:
+      type: object
+      required: [date, isBlocked, availableHours, occupiedHours]
+      properties:
+        date:
+          type: string
+        isBlocked:
+          type: boolean
+        scheduleFrom:
+          type: ["string", "null"]
+        scheduleTo:
+          type: ["string", "null"]
+        scheduleActive:
+          type: boolean
+        availableHours:
+          type: array
+          items:
+            type: integer
+          description: "Hours 0-23 that are free to book"
+        occupiedHours:
+          type: array
+          items:
+            type: integer
+          description: "Hours already booked"
+
+    BlockedDate:
+      type: object
+      required: [id, plassId, dato]
+      properties:
+        id:
+          type: integer
+        plassId:
+          type: integer
+        dato:
+          type: string
+        grunn:
+          type: ["string", "null"]
+        opprettetDato:
+          type: string
+
+    BlockedDateInput:
+      type: object
+      required: [dato]
+      properties:
+        dato:
+          type: string
+        grunn:
+          type: ["string", "null"]
+
+    # SMART PRIS
+    SmartPrisDistrict:
+      type: object
+      required: [navn, garasjeMin, garasjeMax, parkeringMin, parkeringMax]
+      properties:
+        navn:
+          type: string
+        garasjeMin:
+          type: integer
+        garasjeMax:
+          type: integer
+        parkeringMin:
+          type: integer
+        parkeringMax:
+          type: integer
+
+    SmartPrisSuggestion:
+      type: object
+      required: [district, type, anbefalPris, minPris, maxPris]
+      properties:
+        district:
+          type: string
+        type:
+          type: string
+        anbefalPris:
+          type: integer
+        minPris:
+          type: integer
+        maxPris:
+          type: integer
+        forventetMaanedsinntekt:
+          type: integer
+
+    PrisFaktor:
+      type: object
+      required: [ikon, tittel, effekt, type, beskrivelse]
+      properties:
+        ikon:
+          type: string
+        tittel:
+          type: string
+        effekt:
+          type: string
+        type:
+          type: string
+          description: "positiv | negativ | nøytral"
+        beskrivelse:
+          type: string
+
+    SmartPrisDynamic:
+      type: object
+      required: [basePris, adjustedPris, justering, faktorer]
+      properties:
+        basePris:
+          type: integer
+        adjustedPris:
+          type: integer
+        justering:
+          type: string
+        faktorer:
+          type: array
+          items:
+            $ref: "#/components/schemas/PrisFaktor"
+
+    # ADMIN
+    AdminStats:
+      type: object
+      required: [totaltBrukere, totaltPlasser, totaltBookinger, totalInntekt, ventendePlasser]
+      properties:
+        totaltBrukere:
+          type: integer
+        totaltPlasser:
+          type: integer
+        totaltBookinger:
+          type: integer
+        totalInntekt:
+          type: number
+        ventendePlasser:
+          type: integer
+        aktiveBookinger:
+          type: integer
+        totaltInnbetaltFraLeietakere:
+          type: number
+        totaltUtbetaltTilUtleiere:
+          type: number
+        ventendePayout:
+          type: number
+
+    # PLATFORM STATS
+    PlatformStats:
+      type: object
+      required: [antallPlasser, antallKommuner, snittRangering]
+      properties:
+        antallPlasser:
+          type: integer
+        antallKommuner:
+          type: integer
+        snittRangering:
+          type: number
+        bankidVerifisert:
+          type: boolean
+        forsikret:
+          type: boolean
+
+    # OWNER DASHBOARD
+    OwnerDashboard:
+      type: object
+      required: [totalInntekt, maanedsInntekt, aktiveBookinger, totaltPlasser, sisteBookinger]
+      properties:
+        totalInntekt:
+          type: number
+        maanedsInntekt:
+          type: number
+        aktiveBookinger:
+          type: integer
+        totaltPlasser:
+          type: integer
+        beleggsprosent:
+          type: number
+        aktiveAbonnenter:
+          type: integer
+        sisteBookinger:
+          type: array
+          items:
+            $ref: "#/components/schemas/Booking"
+
+    # SUBSCRIPTIONS
+    Subscription:
+      type: object
+      required: [id, plassId, leietakerId, startDato, bindingstid, maanedsPris, nesteBetaling, status, opprettetDato]
+      properties:
+        id:
+          type: integer
+        plassId:
+          type: integer
+        leietakerId:
+          type: integer
+        startDato:
+          type: string
+        bindingstid:
+          type: integer
+          description: "Minimum binding period in months"
+        maanedsPris:
+          type: number
+        nesteBetaling:
+          type: string
+        status:
+          type: string
+          description: "aktiv | avsluttet"
+        opprettetDato:
+          type: string
+        spaseTittel:
+          type: ["string", "null"]
+        spaseAdresse:
+          type: ["string", "null"]
+        spaseBy:
+          type: ["string", "null"]
+        leietakerNavn:
+          type: ["string", "null"]
+        eierNavn:
+          type: ["string", "null"]
+
+    SubscriptionInput:
+      type: object
+      required: [plassId, startDato, bindingstid]
+      properties:
+        plassId:
+          type: integer
+        startDato:
+          type: string
+        bindingstid:
+          type: integer
+
+    # WAITLIST
+    WaitlistEntry:
+      type: object
+      required: [id, plassId, leietakerId, periodeType, oensketDato, status, registrertDato, posisjon]
+      properties:
+        id:
+          type: integer
+        plassId:
+          type: integer
+        leietakerId:
+          type: integer
+        periodeType:
+          type: string
+          description: "time | dag | uke | maaned"
+        oensketDato:
+          type: string
+        oensketSluttDato:
+          type: ["string", "null"]
+        maksPris:
+          type: ["integer", "null"]
+        registrertDato:
+          type: string
+        status:
+          type: string
+          description: "venter | varslet | utlopt | kansellert"
+        varsletDato:
+          type: ["string", "null"]
+        posisjon:
+          type: integer
+        spaseTittel:
+          type: ["string", "null"]
+        spaseAdresse:
+          type: ["string", "null"]
+        spaseBy:
+          type: ["string", "null"]
+        leietakerNavn:
+          type: ["string", "null"]
+
+    WaitlistInput:
+      type: object
+      required: [plassId, periodeType, oensketDato]
+      properties:
+        plassId:
+          type: integer
+        periodeType:
+          type: string
+          description: "time | dag | uke | maaned"
+        oensketDato:
+          type: string
+        oensketSluttDato:
+          type: ["string", "null"]
+        maksPris:
+          type: ["integer", "null"]
+
+
+    Alarm:
+      type: object
+      required: [id, userId, bydel, aktiv, opprettetDato]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        bydel:
+          type: string
+        type:
+          type: ["string", "null"]
+        maxPris:
+          type: ["number", "null"]
+        periode:
+          type: ["string", "null"]
+        aktiv:
+          type: boolean
+        opprettetDato:
+          type: string
+
+    AlarmInput:
+      type: object
+      required: [bydel]
+      properties:
+        bydel:
+          type: string
+        type:
+          type: ["string", "null"]
+        maxPris:
+          type: ["number", "null"]
+        periode:
+          type: ["string", "null"]
+
+    GavekortInput:
+      type: object
+      required: [belop, avsenderNavn, avsenderEpost, mottakerNavn, mottakerEpost]
+      properties:
+        belop:
+          type: string
+          enum: ["500", "1000", "2000"]
+        avsenderNavn:
+          type: string
+        avsenderEpost:
+          type: string
+        mottakerNavn:
+          type: string
+        mottakerEpost:
+          type: string
+        melding:
+          type: ["string", "null"]
+
+    Gavekort:
+      type: object
+      required: [id, kode, belop, avsenderNavn, avsenderEpost, mottakerNavn, mottakerEpost, status, opprettetDato]
+      properties:
+        id:
+          type: integer
+        kode:
+          type: string
+        belop:
+          type: integer
+        avsenderNavn:
+          type: string
+        avsenderEpost:
+          type: string
+        mottakerNavn:
+          type: string
+        mottakerEpost:
+          type: string
+        melding:
+          type: ["string", "null"]
+        status:
+          type: string
+        bruktAvBookingId:
+          type: ["integer", "null"]
+        opprettetDato:
+          type: string
+        bruktDato:
+          type: ["string", "null"]
+
+    Dac7Selger:
+      type: object
+      required: [userId, navn, epost, totalInntekt, lediAvgift, antallBookinger]
+      properties:
+        userId:
+          type: integer
+        navn:
+          type: string
+        epost:
+          type: string
+        personnummer:
+          type: ["string", "null"]
+        totalInntekt:
+          type: number
+        lediAvgift:
+          type: number
+        antallBookinger:
+          type: integer
+
+    Dac7Rapport:
+      type: object
+      required: [year, selgere, totaltInnbetalt, totaltAvgift]
+      properties:
+        year:
+          type: integer
+        selgere:
+          type: array
+          items:
+            $ref: "#/components/schemas/Dac7Selger"
+        totaltInnbetalt:
+          type: number
+        totaltAvgift:
+          type: number
+        sentAt:
+          type: ["string", "null"]
+
+    SendAarsoppgaverResult:
+      type: object
+      required: [ok, antallSendt]
+      properties:
+        ok:
+          type: boolean
+        antallSendt:
+          type: integer
+
+    Varsel:
+      type: object
+      required: [id, userId, tittel, melding, lest, opprettetDato]
+
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        alarmId:
+          type: ["integer", "null"]
+        plassId:
+          type: ["integer", "null"]
+        tittel:
+          type: string
+        melding:
+          type: string
+        lest:
+          type: boolean
+        opprettetDato:
+          type: string
