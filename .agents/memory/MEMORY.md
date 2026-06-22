@@ -1,0 +1,6 @@
+- [Ledi project](spaceli-project.md) — Norwegian parking/storage marketplace (brand: Ledi, was Spaceli): stack, auth, fee model, logo, gotchas.
+- [Orval codegen index.ts conflict fix](orval-index-conflict.md) — orval split mode regenerates api-zod/src/index.ts; patch it post-codegen in package.json to avoid Params name collisions.
+- [Socket.io booking lock](socket-booking-lock.md) — 10-min reservation lock flow, confirm endpoint, socket event emission pattern.
+- [Dashboard live status](dashboard-live-status.md) — liveStatus array from /dashboard/owner accessed via (dashboard as any)?.liveStatus; no OpenAPI spec update needed for this field.
+- [pnpm overrides must use literal versions](pnpm-overrides.md) — root package.json pnpm.overrides must use literal version strings like "19.1.0", not "$react" catalog refs — those fail at install time.
+- [Composite tsconfig for lib project references](composite-tsconfig.md) — any lib/* package referenced by an artifact's tsconfig must have composite:true + declaration:true + emitDeclarationOnly:true set, or tsc errors TS6306.
