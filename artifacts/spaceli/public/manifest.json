@@ -1,0 +1,35 @@
+{
+  "name": "Ledi – Finn ledig plass nær deg",
+  "short_name": "Ledi",
+  "description": "Norges markedsplass for parkering, lagerplass og camping",
+  "theme_color": "#0D1B2A",
+  "background_color": "#0D1B2A",
+  "display": "standalone",
+  "orientation": "portrait",
+  "start_url": "/",
+  "scope": "/",
+  "lang": "nb",
+  "categories": ["travel", "lifestyle"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Finn plass",
+      "short_name": "Finn",
+      "url": "/",
+      "description": "Søk etter ledig parkering eller lagerplass"
+    },
+    {
+      "name": "Lei ut plass",
+      "short_name": "Lei ut",
+      "url": "/dashboard",
+      "description": "Gå til utleier-dashboard"
+    }
+  ]
+}
