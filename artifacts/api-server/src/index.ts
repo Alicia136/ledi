@@ -111,6 +111,31 @@ setTimeout(() => {
   scheduleNextSim();
 }, 3_000);
 
+// ── Payout scheduler: mark bookings as paid when utbetalingTidspunkt passes ───
+setInterval(async () => {
+  try {
+    const pending = await db
+      .select({ id: bookingsTable.id, plassId: bookingsTable.plassId })
+      .from(bookingsTable)
+      .where(
+        and(
+          eq(bookingsTable.status, "confirmed"),
+          eq(bookingsTable.payoutStatus, "venter"),
+          lt(bookingsTable.utbetalingTidspunkt, new Date())
+        )
+      );
+    for (const b of pending) {
+      await db
+        .update(bookingsTable)
+        .set({ payoutStatus: "utbetalt", utbetaltDato: new Date() })
+        .where(eq(bookingsTable.id, b.id));
+      logger.info({ bookingId: b.id }, "Payout processed automatically");
+    }
+  } catch (err) {
+    logger.error({ err }, "Error in payout scheduler");
+  }
+}, 60_000);
+
 // Release expired reservations every 30 seconds
 setInterval(async () => {
   try {
