@@ -95,7 +95,7 @@ export default function MapPlaceholder({ selectedCity, onCityChange }: Props) {
     ? PINS
     : PINS.filter(p => p.city === selectedCity);
 
-  const ledigCount = cityStats[selectedCity] ?? cityStats["Hele Norge"] ?? 847;
+  const ledigCount = cityStats[selectedCity] ?? cityStats["Hele Norge"] ?? 0;
 
   // Flash "changed" class on count when it ticks
   const [countFlash, setCountFlash] = useState(false);
