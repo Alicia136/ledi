@@ -1,6 +1,6 @@
 import { useLocation } from "wouter";
-import { Calendar, MapPin, X, LockOpen, DoorOpen, Loader2, KeyRound, FileText, Star, Mail } from "lucide-react";
-import { useState } from "react";
+import { Calendar, MapPin, X, LockOpen, DoorOpen, Loader2, KeyRound, FileText, Star, Mail, Clock } from "lucide-react";
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import { useAuth } from "@/lib/auth-context";
 import ReviewModal from "@/components/ReviewModal";
@@ -12,6 +12,26 @@ import {
   useUnlocOpen, useTelemetricsOpen,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
+
+function CancelCountdown({ deadline }: { deadline: string }) {
+  const [remaining, setRemaining] = useState(() => new Date(deadline).getTime() - Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setRemaining(new Date(deadline).getTime() - Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [deadline]);
+  if (remaining <= 0) return null;
+  const h = Math.floor(remaining / 3_600_000);
+  const m = Math.floor((remaining % 3_600_000) / 60_000);
+  const s = Math.floor((remaining % 60_000) / 1000);
+  const fmt = (n: number) => String(n).padStart(2, "0");
+  return (
+    <div className="flex items-center gap-1.5 text-xs mb-3 px-3 py-2 rounded-xl" style={{ background: "rgba(0,180,216,0.06)", border: "1px solid rgba(0,180,216,0.15)", color: "rgba(255,255,255,0.6)" }}>
+      <Clock size={12} style={{ color: "#00B4D8" }} />
+      <span>Gratis avbestilling i: </span>
+      <span className="font-bold tabular-nums" style={{ color: "#00B4D8" }}>{fmt(h)}:{fmt(m)}:{fmt(s)}</span>
+    </div>
+  );
+}
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
   confirmed: { label: "Bekreftet", color: "#10B981", bg: "rgba(16,185,129,0.1)" },
@@ -325,28 +345,47 @@ export default function MyBookings() {
                     );
                   })()}
 
-                  {booking.status === "confirmed" && (
-                    <div className="flex gap-2">
-                      <a
-                        href={`/kontrakt/${booking.id}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="flex-1 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all hover:opacity-80"
-                        style={{ color: "#00B4D8", background: "rgba(0,180,216,0.08)", border: "1px solid rgba(0,180,216,0.2)" }}
-                      >
-                        <FileText size={13} /> Last ned kontrakt
-                      </a>
-                      <button
-                        onClick={() => handleCancel(booking.id)}
-                        disabled={cancelBooking.isPending}
-                        className="flex-1 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-50"
-                        style={{ color: "#EF4444", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)" }}
-                        data-testid={`button-cancel-${booking.id}`}
-                      >
-                        <X size={13} /> Avbestill
-                      </button>
-                    </div>
-                  )}
+                  {booking.status === "confirmed" && (() => {
+                    const bkExt = booking as { payoutStatus?: string | null; utbetalingTidspunkt?: string | null };
+                    const deadline = bkExt.utbetalingTidspunkt ? new Date(bkExt.utbetalingTidspunkt) : null;
+                    const canCancel = bkExt.payoutStatus !== "utbetalt" && deadline && deadline > new Date();
+                    const paidOut = bkExt.payoutStatus === "utbetalt";
+                    return (
+                      <>
+                        {canCancel && deadline && (
+                          <CancelCountdown deadline={bkExt.utbetalingTidspunkt!} />
+                        )}
+                        {!canCancel && !paidOut && (
+                          <div className="flex items-center gap-1.5 text-xs mb-3 px-3 py-2 rounded-xl" style={{ background: "rgba(239,68,68,0.05)", border: "1px solid rgba(239,68,68,0.15)", color: "rgba(255,255,255,0.45)" }}>
+                            <X size={12} style={{ color: "#EF4444" }} />
+                            Avbestilling er ikke lenger mulig
+                          </div>
+                        )}
+                        <div className="flex gap-2">
+                          <a
+                            href={`/kontrakt/${booking.id}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="flex-1 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all hover:opacity-80"
+                            style={{ color: "#00B4D8", background: "rgba(0,180,216,0.08)", border: "1px solid rgba(0,180,216,0.2)" }}
+                          >
+                            <FileText size={13} /> Last ned kontrakt
+                          </a>
+                          {canCancel && (
+                            <button
+                              onClick={() => handleCancel(booking.id)}
+                              disabled={cancelBooking.isPending}
+                              className="flex-1 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+                              style={{ color: "#EF4444", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)" }}
+                              data-testid={`button-cancel-${booking.id}`}
+                            >
+                              <X size={13} /> Avbestill gratis
+                            </button>
+                          )}
+                        </div>
+                      </>
+                    );
+                  })()}
 
                   {booking.status === "completed" && (booking as { plassId?: number }).plassId && (
                     <button
