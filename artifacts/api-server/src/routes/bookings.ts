@@ -46,6 +46,8 @@ async function formatBooking(b: typeof bookingsTable.$inferSelect) {
     tilgangskode: b.tilgangskode ?? null,
     leietakerNavn: renter?.navn ?? null,
     opprettetDato: b.opprettetDato?.toISOString(),
+    payoutStatus: b.payoutStatus ?? null,
+    utbetalingTidspunkt: b.utbetalingTidspunkt?.toISOString() ?? null,
   };
 }
 
@@ -181,9 +183,23 @@ router.post("/bookings/:id/confirm", requireAuth, async (req, res): Promise<void
     return;
   }
 
+  const now = new Date();
+  const hoursToStart = (booking.startDato.getTime() - now.getTime()) / (1000 * 60 * 60);
+  const isLastMinute = hoursToStart < 24;
+  const utbetalingTidspunkt = isLastMinute
+    ? now
+    : new Date(now.getTime() + 24 * 60 * 60 * 1000);
+
   const [updated] = await db
     .update(bookingsTable)
-    .set({ status: "confirmed", confirmedAt: new Date(), lockedUntil: null, tilgangskode: genTilgangskode() })
+    .set({
+      status: "confirmed",
+      confirmedAt: now,
+      lockedUntil: null,
+      tilgangskode: genTilgangskode(),
+      payoutStatus: "venter",
+      utbetalingTidspunkt,
+    })
     .where(eq(bookingsTable.id, id))
     .returning();
 
@@ -265,9 +281,23 @@ router.post("/bookings/:id/cancel", requireAuth, async (req, res): Promise<void>
     res.status(403).json({ error: "Ikke tilgang" }); return;
   }
 
+  // Enforce 24h cancellation policy (skip for admin)
+  if (booking.status === "confirmed" && authUser.rolle !== "admin") {
+    if (booking.payoutStatus === "utbetalt") {
+      res.status(400).json({ error: "Kan ikke avbestille – utleier har allerede mottatt betaling.", code: "PAYOUT_DONE" });
+      return;
+    }
+    const nowTs = new Date();
+    const cancelDeadline = booking.utbetalingTidspunkt ?? new Date(0);
+    if (cancelDeadline <= nowTs) {
+      res.status(400).json({ error: "Kan ikke avbestille – avbestillingsfristen har gått ut.", code: "CANCEL_EXPIRED" });
+      return;
+    }
+  }
+
   const [updated] = await db
     .update(bookingsTable)
-    .set({ status: "cancelled", cancelledAt: new Date() })
+    .set({ status: "cancelled", cancelledAt: new Date(), payoutStatus: "refundert" })
     .where(eq(bookingsTable.id, id))
     .returning();
 
