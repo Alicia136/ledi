@@ -24,26 +24,17 @@ export interface ActivityEvent {
   ts: number;
 }
 
-// Live stats: ledigCount per city
+// Live stats: ledigCount per city — starts at 0, grows with real listings
 const _cityStats: Record<string, number> = {
-  "Oslo": 847,
-  "Bergen": 312,
-  "Trondheim": 198,
-  "Stavanger": 156,
-  "Tromsø": 89,
-  "Hele Norge": 1847,
+  "Oslo": 0,
+  "Bergen": 0,
+  "Trondheim": 0,
+  "Stavanger": 0,
+  "Tromsø": 0,
+  "Hele Norge": 0,
 };
 
-// Small random drift every second to simulate organic changes
 export function tickLiveStats(): void {
-  for (const city of Object.keys(_cityStats)) {
-    const drift = Math.floor(Math.random() * 5) - 2; // -2 to +2
-    _cityStats[city] = Math.max(10, (_cityStats[city] ?? 100) + drift);
-    // Keep Hele Norge as sum of cities
-    if (city !== "Hele Norge") {
-      _cityStats["Hele Norge"] = (_cityStats["Hele Norge"] ?? 0) + drift;
-    }
-  }
   _io?.emit("live_stats", { stats: _cityStats, ts: Date.now() });
 }
 
