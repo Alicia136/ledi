@@ -416,6 +416,13 @@ export default function Home() {
             </div>
           )}
 
+          {/* Pricing transparency strip */}
+          <div className="flex items-center justify-center gap-2 mt-2 mb-1">
+            <span className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>
+              💳 Vi tar <span className="font-semibold text-white/60">8% fra utleier</span> og <span className="font-semibold text-white/60">8% fra leietaker</span> per booking
+            </span>
+          </div>
+
           {/* Radius slider — only shown when address is selected */}
           <AnimatePresence>
             {addressResult && (
