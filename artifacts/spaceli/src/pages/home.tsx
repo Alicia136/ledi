@@ -139,7 +139,7 @@ type SpaceItem = any;
 export default function Home() {
   useSEO({
     title: "Ledi – Finn ledig parkering, lagerplass og camping nær deg",
-    description: "Book parkering, lagerplass, camping, båtplass og hengerplass direkte fra private utleiere i Norge. Book på 30 sekunder. Utleier utbetalt samme dag.",
+    description: "Book parkering, lagerplass, camping, båtplass og hengerplass direkte fra private utleiere i Norge. Book på 30 sekunder. Utbetaling til utleier innen 24 timer.",
     canonical: "https://ledi.no/",
   });
 
@@ -305,7 +305,7 @@ export default function Home() {
             </span>
             <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold"
               style={{ background: "rgba(16,185,129,0.12)", border: "1px solid rgba(16,185,129,0.3)", color: "#10B981" }}>
-              💸 Utleier utbetalt samme dag
+              💸 Utbetaling innen 24 timer
             </span>
           </div>
 
