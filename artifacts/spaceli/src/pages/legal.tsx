@@ -17,11 +17,11 @@ const CONTENT: Record<LegalType, { title: string; sections: { heading: string; t
       },
       {
         heading: "2. Betaling",
-        text: "Betalingsmetoder: Vipps (standard), bankkort via Stripe, faktura for bedriftskunder.\n\nGebyrmodell 8/8: Leietaker betaler listepris + 8%. Utleier mottar listepris − 8%. Ledi tjener 16% totalt. Alle priser vises i NOK. Ingen skjulte avgifter.\n\nUtbetaling til utleier: Via Vipps umiddelbart etter booking. Utleier mottar 92% av listepris.",
+        text: "Betalingsmetoder: Vipps (standard), bankkort via Stripe, faktura for bedriftskunder.\n\nGebyrmodell 8/8: Leietaker betaler listepris + 8%. Utleier mottar listepris − 8%. Ledi tjener 16% totalt. Alle priser vises i NOK. Ingen skjulte avgifter.\n\nUtbetaling til utleier skjer automatisk 24 timer etter bekreftet booking, forutsatt at bookingen ikke er avbestilt. Ved avbestilling innen 24 timer refunderes leietaker fullt ut og utleier mottar ingen utbetaling.\n\nVed booking som starter innen 24 timer: utbetaling skjer umiddelbart og avbestilling er ikke mulig.",
       },
       {
         heading: "3. Angrerett",
-        text: "Standard 14-dagers angrerett gjelder IKKE for tidsbestemte leietjenester jf. angrerettloven § 22 bokstav l.\n\nLedis avbestillingsregler:\n• Mer enn 24 timer før start: 100 % refusjon\n• 0–24 timer før start: ingen refusjon\n• Utleier avbestiller: 100 % refusjon til leietaker\n\nAbonnement kan sies opp når som helst.",
+        text: "Standard 14-dagers angrerett gjelder IKKE for tidsbestemte leietjenester jf. angrerettloven § 22 bokstav l.\n\nLedis avbestillingsregler:\n• Avbestilling er mulig gratis inntil 24 timer etter bekreftet booking\n• Avbestilling er ikke mulig de siste 24 timene før bookingstart\n• Ved booking som starter innen 24 timer: avbestilling ikke mulig\n• Utleier avbestiller: 100 % refusjon til leietaker\n\nAbonnement kan sies opp når som helst.",
       },
       {
         heading: "4. Retur og refusjon",
@@ -62,7 +62,7 @@ const CONTENT: Record<LegalType, { title: string; sections: { heading: string; t
       },
       {
         heading: "6. Betaling og gebyrer",
-        text: "Utleier betaler 8 % serviceavgift til Ledi. Leietaker betaler 8 % serviceavgift til Ledi. Ledi tjener totalt 16 %. Utbetaling til utleier skjer via Vipps.\n\nAvbestilling:\n• Mer enn 24 timer: 100 % refusjon\n• 0–24 timer: ingen refusjon",
+        text: "Utleier betaler 8 % serviceavgift til Ledi. Leietaker betaler 8 % serviceavgift til Ledi. Ledi tjener totalt 16 %. Utbetaling til utleier skjer via Vipps.\n\nUtbetaling til utleier skjer automatisk 24 timer etter bekreftet booking. Ved avbestilling innen 24 timer refunderes leietaker fullt ut og utleier mottar ingen utbetaling.\n\nAvbestilling:\n• Inntil 24 timer etter bekreftet booking: 100 % refusjon\n• Etter 24 timer eller ved booking som starter innen 24 timer: ingen refusjon",
       },
       {
         heading: "7. Forbudt bruk",
