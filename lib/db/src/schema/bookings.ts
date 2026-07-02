@@ -25,6 +25,7 @@ export const bookingsTable = pgTable("bookings", {
   payoutReference: text("payout_reference"),
   payoutFeilCount: integer("payout_feil_count").notNull().default(0),
   payoutNesteForsok: timestamp("payout_neste_forsok", { withTimezone: true }),
+  utbetalingTidspunkt: timestamp("utbetaling_tidspunkt", { withTimezone: true }),
   unlocTilgangGranted: boolean("unloc_tilgang_granted").notNull().default(false),
   tilgangskode: text("tilgangskode"),
   telemetricsTilgangGranted: boolean("telemetrics_tilgang_granted").notNull().default(false),
