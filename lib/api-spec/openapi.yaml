@@ -2171,6 +2171,12 @@ components:
           type: ["string", "null"]
         opprettetDato:
           type: string
+        payoutStatus:
+          type: ["string", "null"]
+          description: "venter | utbetalt | refundert"
+        utbetalingTidspunkt:
+          type: ["string", "null"]
+          description: "ISO timestamp — when payout to owner will be processed"
 
     TelemetricsOpenResult:
       type: object
