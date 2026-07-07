@@ -4,7 +4,7 @@ import app from "./app";
 import { logger } from "./lib/logger";
 import { setIo, emitSpaceReleased, tickLiveStats } from "./lib/io";
 import { verifyToken } from "./lib/auth";
-import { db, bookingsTable } from "@workspace/db";
+import { db, bookingsTable, runMigrations } from "@workspace/db";
 import { and, eq, lt } from "drizzle-orm";
 import { startPayoutRetryScheduler } from "./routes/vipps";
 import { startDac7Scheduler } from "./lib/dac7Scheduler";
@@ -105,8 +105,20 @@ httpServer.on("error", (err: NodeJS.ErrnoException) => {
   process.exit(1);
 });
 
-httpServer.listen(port, () => {
-  logger.info({ port }, "Server listening");
-  void startPayoutRetryScheduler();
-  startDac7Scheduler();
-});
+async function start() {
+  try {
+    await runMigrations();
+    logger.info("Database migrations applied");
+  } catch (err) {
+    logger.error({ err }, "Failed to run migrations");
+    process.exit(1);
+  }
+
+  httpServer.listen(port, () => {
+    logger.info({ port }, "Server listening");
+    void startPayoutRetryScheduler();
+    startDac7Scheduler();
+  });
+}
+
+void start();
