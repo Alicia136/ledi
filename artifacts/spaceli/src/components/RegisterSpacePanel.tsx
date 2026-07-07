@@ -3,6 +3,7 @@ import { X, ChevronRight, ChevronLeft, TrendingUp, Clock, CheckCircle2, ArrowRig
 import { useCreateSpace, useAddSpaceBilde, useRequestUploadUrl, getGetMySpacesQueryKey, getGetStatsSummaryQueryKey, useGetSmartPrisDynamic } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useGetSmartPrisData } from "@workspace/api-client-react";
+import AdresseAutocomplete from "./AdresseAutocomplete";
 
 const TYPES = [
   { key: "parking",        label: "Parkeringsplass",   emoji: "🚗",  group: "parkering" },
@@ -142,6 +143,8 @@ export default function RegisterSpacePanel({ onClose, initialPrisModell }: Props
   const [adresse, setAdresse] = useState("");
   const [by, setBy] = useState("");
   const [postnummer, setPostnummer] = useState("");
+  const [breddegrad, setBreddegrad] = useState<number | null>(null);
+  const [lengdegrad, setLengdegrad] = useState<number | null>(null);
   const [fasiliteter, setFasiliteter] = useState<string[]>([]);
   const [prisModell, setPrisModell] = useState<"fri" | "smart">(initialPrisModell ?? "fri");
   const [smartBydel, setSmartBydel] = useState("");
@@ -250,8 +253,8 @@ export default function RegisterSpacePanel({ onClose, initialPrisModell }: Props
         adresse,
         by,
         postnummer,
-        breddegrad: 59.9139,
-        lengdegrad: 10.7522,
+        breddegrad: breddegrad ?? 59.9139,
+        lengdegrad: lengdegrad ?? 10.7522,
         fasiliteter,
         prisModell,
         smartPrisBydel: prisModell === "smart" ? smartBydel : null,
@@ -420,13 +423,22 @@ export default function RegisterSpacePanel({ onClose, initialPrisModell }: Props
                 className="w-full px-3 py-2.5 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/40 mb-3 text-sm focus:outline-none focus:border-[#00B4D8]"
                 data-testid="input-space-title"
               />
-              <input
-                value={adresse}
-                onChange={e => setAdresse(e.target.value)}
-                placeholder="Adresse *"
-                className="w-full px-3 py-2.5 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/40 mb-3 text-sm focus:outline-none focus:border-[#00B4D8]"
-                data-testid="input-space-address"
-              />
+              <div className="mb-3">
+                <AdresseAutocomplete
+                  value={adresse}
+                  onChange={setAdresse}
+                  onSelect={({ adresse: a, by: b, postnummer: p, lat, lng }) => {
+                    setAdresse(a);
+                    setBy(b);
+                    setPostnummer(p);
+                    if (lat) setBreddegrad(lat);
+                    if (lng) setLengdegrad(lng);
+                  }}
+                  placeholder="Adresse *"
+                  className="w-full px-3 py-2.5 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/40 text-sm focus:outline-none focus:border-[#00B4D8]"
+                  data-testid="input-space-address"
+                />
+              </div>
               <div className="grid grid-cols-2 gap-2 mb-5">
                 <input
                   value={by}
