@@ -13,7 +13,7 @@ const CONTENT: Record<LegalType, { title: string; sections: { heading: string; t
     sections: [
       {
         heading: "1. Selger",
-        text: "Selskap: Ledi · Organisasjonsnr: 937 869 320 · E-post: hei@ledi.no · Nettside: ledi.no",
+        text: "Selskap: Ledi ENK · Organisasjonsnr: 937 869 320 · E-post: hei@ledi.no · Nettside: ledi.no\n\nTjeneste: Ledi er en norsk markedsplass for utleie og leie av parkerings- og lagerplass, campingplass, båtplass, hengerplass, elbilplass, kontor og festlokale.",
       },
       {
         heading: "2. Betaling",
