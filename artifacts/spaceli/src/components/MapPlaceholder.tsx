@@ -127,35 +127,37 @@ export default function MapPlaceholder({ selectedCity, onCityChange }: Props) {
         </svg>
       </div>
 
-      {/* ── LIVE COUNTER — hero banner ─────────────────────────────────────────── */}
-      <div
-        className="absolute top-3 left-1/2 -translate-x-1/2 z-20 px-4 py-2 rounded-2xl flex items-center gap-2 whitespace-nowrap"
-        style={{
-          background: "rgba(0,0,0,0.72)",
-          backdropFilter: "blur(10px)",
-          border: "1px solid rgba(0,180,216,0.3)",
-          boxShadow: "0 0 24px rgba(0,180,216,0.12)",
-        }}
-      >
-        <span
-          className="text-base font-black transition-all duration-300"
+      {/* ── LIVE COUNTER — only show when there are real listings ─────────────── */}
+      {ledigCount > 0 && (
+        <div
+          className="absolute top-3 left-1/2 -translate-x-1/2 z-20 px-4 py-2 rounded-2xl flex items-center gap-2 whitespace-nowrap"
           style={{
-            color: countFlash ? "#00FFD0" : "#00B4D8",
-            fontFamily: "'Syne', sans-serif",
-            fontSize: 18,
-            textShadow: countFlash ? "0 0 12px #00B4D8" : "none",
+            background: "rgba(0,0,0,0.72)",
+            backdropFilter: "blur(10px)",
+            border: "1px solid rgba(0,180,216,0.3)",
+            boxShadow: "0 0 24px rgba(0,180,216,0.12)",
           }}
         >
-          <AnimatedCount value={ledigCount} />
-        </span>
-        <span className="text-xs text-white/60">
-          ledige plasser i <span className="text-white font-semibold">{selectedCity}</span> akkurat nå
-        </span>
-        <span
-          className="w-1.5 h-1.5 rounded-full animate-pulse"
-          style={{ background: "#10B981", boxShadow: "0 0 6px #10B981" }}
-        />
-      </div>
+          <span
+            className="text-base font-black transition-all duration-300"
+            style={{
+              color: countFlash ? "#00FFD0" : "#00B4D8",
+              fontFamily: "'Syne', sans-serif",
+              fontSize: 18,
+              textShadow: countFlash ? "0 0 12px #00B4D8" : "none",
+            }}
+          >
+            <AnimatedCount value={ledigCount} />
+          </span>
+          <span className="text-xs text-white/60">
+            ledige plasser i <span className="text-white font-semibold">{selectedCity}</span> akkurat nå
+          </span>
+          <span
+            className="w-1.5 h-1.5 rounded-full animate-pulse"
+            style={{ background: "#10B981", boxShadow: "0 0 6px #10B981" }}
+          />
+        </div>
+      )}
 
       {/* ── Sanntid indicator ─────────────────────────────────────────────────── */}
       <div
@@ -281,16 +283,9 @@ export default function MapPlaceholder({ selectedCity, onCityChange }: Props) {
         </div>
       </div>
 
-      {/* ── Live activity feed ────────────────────────────────────────────────── */}
+      {/* ── Live activity feed — only show when there is real activity ─────────── */}
       <div className="absolute bottom-3 right-3 z-10 flex flex-col gap-1 items-end" style={{ maxWidth: 220 }}>
-        {recentActivity.length === 0 ? (
-          <div
-            className="px-2.5 py-1.5 rounded-xl text-[10px] text-white/30"
-            style={{ background: "rgba(0,0,0,0.4)", border: "1px solid rgba(255,255,255,0.06)" }}
-          >
-            Venter på aktivitet…
-          </div>
-        ) : (
+        {recentActivity.length === 0 ? null : (
           recentActivity.map((ev) => {
             const cfg = ACTIVITY_LABELS[ev.action];
             return (
