@@ -1,0 +1,1882 @@
+{
+  "id": "101ddcf3-d67b-4412-ad79-6cb87b8f3335",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.users": {
+      "name": "users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "navn": {
+          "name": "navn",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "epost": {
+          "name": "epost",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "passord_hash": {
+          "name": "passord_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rolle": {
+          "name": "rolle",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'leietaker'"
+        },
+        "bankid_verifisert": {
+          "name": "bankid_verifisert",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "rask_svar": {
+          "name": "rask_svar",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "vipps_nummer": {
+          "name": "vipps_nummer",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "email_verifisert": {
+          "name": "email_verifisert",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "verification_token": {
+          "name": "verification_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reset_token": {
+          "name": "reset_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reset_token_expiry": {
+          "name": "reset_token_expiry",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "personnummer": {
+          "name": "personnummer",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "kontonummer": {
+          "name": "kontonummer",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "opprettet_dato": {
+          "name": "opprettet_dato",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "users_epost_unique": {
+          "name": "users_epost_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "epost"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.prices": {
+      "name": "prices",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "plass_id": {
+          "name": "plass_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "periode": {
+          "name": "periode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "belop": {
+          "name": "belop",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.spaces": {
+      "name": "spaces",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "eier_id": {
+          "name": "eier_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tittel": {
+          "name": "tittel",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "adresse": {
+          "name": "adresse",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "by": {
+          "name": "by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "postnummer": {
+          "name": "postnummer",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "breddegrad": {
+          "name": "breddegrad",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lengdegrad": {
+          "name": "lengdegrad",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "beskrivelse": {
+          "name": "beskrivelse",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fasiliteter": {
+          "name": "fasiliteter",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'"
+        },
+        "er_aktiv": {
+          "name": "er_aktiv",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "er_godkjent": {
+          "name": "er_godkjent",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "pris_modell": {
+          "name": "pris_modell",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'fri'"
+        },
+        "smart_pris_bydel": {
+          "name": "smart_pris_bydel",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tilbyr_abonnement": {
+          "name": "tilbyr_abonnement",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "abonnements_pris": {
+          "name": "abonnements_pris",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "min_bindingstid": {
+          "name": "min_bindingstid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bilde_sti": {
+          "name": "bilde_sti",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "current_status": {
+          "name": "current_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'available'"
+        },
+        "auto_approval": {
+          "name": "auto_approval",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "antall_plasser": {
+          "name": "antall_plasser",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "maks_lengde": {
+          "name": "maks_lengde",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "strom_amp": {
+          "name": "strom_amp",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vann_tilkobling": {
+          "name": "vann_tilkobling",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "tommestasjon": {
+          "name": "tommestasjon",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "overnatting_tillatt": {
+          "name": "overnatting_tillatt",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "lavseson_pris": {
+          "name": "lavseson_pris",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hoyseson_pris": {
+          "name": "hoyseson_pris",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "antall_bilder": {
+          "name": "antall_bilder",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "har_unloc": {
+          "name": "har_unloc",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "unloc_lock_id": {
+          "name": "unloc_lock_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "har_telemetrics": {
+          "name": "har_telemetrics",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "telemetrics_port_id": {
+          "name": "telemetrics_port_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "borettslag_id": {
+          "name": "borettslag_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "kun_beboere": {
+          "name": "kun_beboere",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "er_natteparkering": {
+          "name": "er_natteparkering",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "natt_pris_helg_tillegg": {
+          "name": "natt_pris_helg_tillegg",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "helge_mode": {
+          "name": "helge_mode",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "helge_pris": {
+          "name": "helge_pris",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "arrangement_modus": {
+          "name": "arrangement_modus",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "arrangement_pris": {
+          "name": "arrangement_pris",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "opprettet_dato": {
+          "name": "opprettet_dato",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.bookings": {
+      "name": "bookings",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "plass_id": {
+          "name": "plass_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "leietaker_id": {
+          "name": "leietaker_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "start_dato": {
+          "name": "start_dato",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "slutt_dato": {
+          "name": "slutt_dato",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "periode_type": {
+          "name": "periode_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "total_pris": {
+          "name": "total_pris",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "utleier_belop": {
+          "name": "utleier_belop",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "spaceli_gebyr": {
+          "name": "spaceli_gebyr",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "locked_until": {
+          "name": "locked_until",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "confirmed_at": {
+          "name": "confirmed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancelled_at": {
+          "name": "cancelled_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vipps_betaling_id": {
+          "name": "vipps_betaling_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "betalt_av_leietaker": {
+          "name": "betalt_av_leietaker",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "utbetalt_til_utleier": {
+          "name": "utbetalt_til_utleier",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ledi_inntekt": {
+          "name": "ledi_inntekt",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "utbetalt_dato": {
+          "name": "utbetalt_dato",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "payout_status": {
+          "name": "payout_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "payout_reference": {
+          "name": "payout_reference",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "payout_feil_count": {
+          "name": "payout_feil_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "payout_neste_forsok": {
+          "name": "payout_neste_forsok",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "utbetaling_tidspunkt": {
+          "name": "utbetaling_tidspunkt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "unloc_tilgang_granted": {
+          "name": "unloc_tilgang_granted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "tilgangskode": {
+          "name": "tilgangskode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "telemetrics_tilgang_granted": {
+          "name": "telemetrics_tilgang_granted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "opprettet_dato": {
+          "name": "opprettet_dato",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.reviews": {
+      "name": "reviews",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "booking_id": {
+          "name": "booking_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rangering": {
+          "name": "rangering",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kommentar": {
+          "name": "kommentar",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "opprettet_dato": {
+          "name": "opprettet_dato",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.availability_schedule": {
+      "name": "availability_schedule",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "plass_id": {
+          "name": "plass_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dag_i_nummer": {
+          "name": "dag_i_nummer",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fra_tid": {
+          "name": "fra_tid",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'08:00'"
+        },
+        "til_tid": {
+          "name": "til_tid",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'16:00'"
+        },
+        "er_tilgjengelig": {
+          "name": "er_tilgjengelig",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.blocked_dates": {
+      "name": "blocked_dates",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "plass_id": {
+          "name": "plass_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dato": {
+          "name": "dato",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "grunn": {
+          "name": "grunn",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "opprettet_dato": {
+          "name": "opprettet_dato",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.subscriptions": {
+      "name": "subscriptions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "plass_id": {
+          "name": "plass_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "leietaker_id": {
+          "name": "leietaker_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "start_dato": {
+          "name": "start_dato",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bindingstid": {
+          "name": "bindingstid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "maaneds_pris": {
+          "name": "maaneds_pris",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "neste_betaling": {
+          "name": "neste_betaling",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'aktiv'"
+        },
+        "opprettet_dato": {
+          "name": "opprettet_dato",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.waitlist": {
+      "name": "waitlist",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "plass_id": {
+          "name": "plass_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "leietaker_id": {
+          "name": "leietaker_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "periode_type": {
+          "name": "periode_type",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "onsket_dato": {
+          "name": "onsket_dato",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "onsket_slutt_dato": {
+          "name": "onsket_slutt_dato",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "maks_pris": {
+          "name": "maks_pris",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "registrert_dato": {
+          "name": "registrert_dato",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "status": {
+          "name": "status",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'venter'"
+        },
+        "varslet_dato": {
+          "name": "varslet_dato",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.alarmer": {
+      "name": "alarmer",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bydel": {
+          "name": "bydel",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "max_pris": {
+          "name": "max_pris",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "periode": {
+          "name": "periode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "aktiv": {
+          "name": "aktiv",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "opprettet_dato": {
+          "name": "opprettet_dato",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.varsler": {
+      "name": "varsler",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "alarm_id": {
+          "name": "alarm_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "plass_id": {
+          "name": "plass_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tittel": {
+          "name": "tittel",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "melding": {
+          "name": "melding",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lest": {
+          "name": "lest",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "opprettet_dato": {
+          "name": "opprettet_dato",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.borettslag_medlemmer": {
+      "name": "borettslag_medlemmer",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "borettslag_id": {
+          "name": "borettslag_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "epost": {
+          "name": "epost",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "leilighetsnummer": {
+          "name": "leilighetsnummer",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "er_aktiv": {
+          "name": "er_aktiv",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "lagt_til_dato": {
+          "name": "lagt_til_dato",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.borettslag": {
+      "name": "borettslag",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "navn": {
+          "name": "navn",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "orgnummer": {
+          "name": "orgnummer",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "kontakt_epost": {
+          "name": "kontakt_epost",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bankkontonummer": {
+          "name": "bankkontonummer",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "adresse": {
+          "name": "adresse",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "postnummer": {
+          "name": "postnummer",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "by": {
+          "name": "by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "styreleder_user_id": {
+          "name": "styreleder_user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "antall_leiligheter": {
+          "name": "antall_leiligheter",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "opprettet_dato": {
+          "name": "opprettet_dato",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.gavekorter": {
+      "name": "gavekorter",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "kode": {
+          "name": "kode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "belop": {
+          "name": "belop",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "avsender_navn": {
+          "name": "avsender_navn",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "avsender_epost": {
+          "name": "avsender_epost",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "mottaker_navn": {
+          "name": "mottaker_navn",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "mottaker_epost": {
+          "name": "mottaker_epost",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "melding": {
+          "name": "melding",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'aktiv'"
+        },
+        "brukt_av_booking_id": {
+          "name": "brukt_av_booking_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "opprettet_dato": {
+          "name": "opprettet_dato",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "brukt_dato": {
+          "name": "brukt_dato",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "gavekorter_kode_unique": {
+          "name": "gavekorter_kode_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "kode"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.bytte_foresporsel": {
+      "name": "bytte_foresporsel",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "fra_user_id": {
+          "name": "fra_user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "til_user_id": {
+          "name": "til_user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'venter'"
+        },
+        "melding": {
+          "name": "melding",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "opprettet_dato": {
+          "name": "opprettet_dato",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "behandlet_dato": {
+          "name": "behandlet_dato",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.bytteprofiler": {
+      "name": "bytteprofiler",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "navarende_bydel": {
+          "name": "navarende_bydel",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "onsket_bydel": {
+          "name": "onsket_bydel",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'parkering'"
+        },
+        "beskrivelse": {
+          "name": "beskrivelse",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "aktiv": {
+          "name": "aktiv",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "opprettet_dato": {
+          "name": "opprettet_dato",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.partnere": {
+      "name": "partnere",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "partner_id": {
+          "name": "partner_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "navn": {
+          "name": "navn",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'restaurant'"
+        },
+        "kontakt_epost": {
+          "name": "kontakt_epost",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nettside": {
+          "name": "nettside",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "provision_prosent": {
+          "name": "provision_prosent",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 2
+        },
+        "er_aktiv": {
+          "name": "er_aktiv",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "opprettet_dato": {
+          "name": "opprettet_dato",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "partnere_partner_id_unique": {
+          "name": "partnere_partner_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "partner_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.widget_klikk": {
+      "name": "widget_klikk",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "partner_id": {
+          "name": "partner_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "booking_id": {
+          "name": "booking_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_agent": {
+          "name": "user_agent",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "opprettet_dato": {
+          "name": "opprettet_dato",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.kalender_integrasjoner": {
+      "name": "kalender_integrasjoner",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "plass_id": {
+          "name": "plass_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "provider": {
+          "name": "provider",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "account_email": {
+          "name": "account_email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "access_token": {
+          "name": "access_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "refresh_token": {
+          "name": "refresh_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sist_synkronisert": {
+          "name": "sist_synkronisert",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'aktiv'"
+        },
+        "demo_modus": {
+          "name": "demo_modus",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "opprettet_dato": {
+          "name": "opprettet_dato",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.arrangement_aktiveringer": {
+      "name": "arrangement_aktiveringer",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "arrangement_id": {
+          "name": "arrangement_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "plass_id": {
+          "name": "plass_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "event_pris": {
+          "name": "event_pris",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "aktivert_dato": {
+          "name": "aktivert_dato",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.arrangementer": {
+      "name": "arrangementer",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "navn": {
+          "name": "navn",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sted": {
+          "name": "sted",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "by": {
+          "name": "by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dato": {
+          "name": "dato",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "klokkeslett": {
+          "name": "klokkeslett",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'20:00'"
+        },
+        "breddegrad": {
+          "name": "breddegrad",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lengdegrad": {
+          "name": "lengdegrad",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "antall_billetter": {
+          "name": "antall_billetter",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 5000
+        },
+        "kategori": {
+          "name": "kategori",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'konsert'"
+        },
+        "emoji": {
+          "name": "emoji",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'🎵'"
+        },
+        "kilde": {
+          "name": "kilde",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'ticketmaster'"
+        },
+        "bilde_url": {
+          "name": "bilde_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "estimert_parkeringssokere": {
+          "name": "estimert_parkeringssokere",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1200
+        },
+        "aktiv": {
+          "name": "aktiv",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "opprettet_dato": {
+          "name": "opprettet_dato",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "arrangementer_slug_unique": {
+          "name": "arrangementer_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "slug"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.lanseringsliste": {
+      "name": "lanseringsliste",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "epost": {
+          "name": "epost",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "opprettet_dato": {
+          "name": "opprettet_dato",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "lanseringsliste_epost_unique": {
+          "name": "lanseringsliste_epost_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "epost"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.dac7_rapporter": {
+      "name": "dac7_rapporter",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "year": {
+          "name": "year",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "antall_utleiere": {
+          "name": "antall_utleiere",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sent_at": {
+          "name": "sent_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "dac7_rapporter_year_unique": {
+          "name": "dac7_rapporter_year_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "year"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
