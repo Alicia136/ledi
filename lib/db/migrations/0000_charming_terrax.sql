@@ -1,4 +1,4 @@
-CREATE TABLE "users" (
+CREATE TABLE IF NOT EXISTS "users" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"navn" text NOT NULL,
 	"epost" text NOT NULL,
@@ -17,14 +17,14 @@ CREATE TABLE "users" (
 	CONSTRAINT "users_epost_unique" UNIQUE("epost")
 );
 --> statement-breakpoint
-CREATE TABLE "prices" (
+CREATE TABLE IF NOT EXISTS "prices" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"plass_id" integer NOT NULL,
 	"periode" text NOT NULL,
 	"belop" real NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "spaces" (
+CREATE TABLE IF NOT EXISTS "spaces" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"eier_id" integer NOT NULL,
 	"tittel" text NOT NULL,
@@ -70,7 +70,7 @@ CREATE TABLE "spaces" (
 	"opprettet_dato" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "bookings" (
+CREATE TABLE IF NOT EXISTS "bookings" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"plass_id" integer NOT NULL,
 	"leietaker_id" integer NOT NULL,
@@ -100,7 +100,7 @@ CREATE TABLE "bookings" (
 	"opprettet_dato" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "reviews" (
+CREATE TABLE IF NOT EXISTS "reviews" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"booking_id" integer NOT NULL,
 	"rangering" integer NOT NULL,
@@ -108,7 +108,7 @@ CREATE TABLE "reviews" (
 	"opprettet_dato" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "availability_schedule" (
+CREATE TABLE IF NOT EXISTS "availability_schedule" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"plass_id" integer NOT NULL,
 	"dag_i_nummer" integer NOT NULL,
@@ -117,7 +117,7 @@ CREATE TABLE "availability_schedule" (
 	"er_tilgjengelig" boolean DEFAULT true NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "blocked_dates" (
+CREATE TABLE IF NOT EXISTS "blocked_dates" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"plass_id" integer NOT NULL,
 	"dato" text NOT NULL,
@@ -125,7 +125,7 @@ CREATE TABLE "blocked_dates" (
 	"opprettet_dato" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "subscriptions" (
+CREATE TABLE IF NOT EXISTS "subscriptions" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"plass_id" integer NOT NULL,
 	"leietaker_id" integer NOT NULL,
@@ -137,7 +137,7 @@ CREATE TABLE "subscriptions" (
 	"opprettet_dato" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "waitlist" (
+CREATE TABLE IF NOT EXISTS "waitlist" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"plass_id" integer NOT NULL,
 	"leietaker_id" integer NOT NULL,
@@ -150,7 +150,7 @@ CREATE TABLE "waitlist" (
 	"varslet_dato" timestamp with time zone
 );
 --> statement-breakpoint
-CREATE TABLE "alarmer" (
+CREATE TABLE IF NOT EXISTS "alarmer" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"user_id" integer NOT NULL,
 	"bydel" text NOT NULL,
@@ -161,7 +161,7 @@ CREATE TABLE "alarmer" (
 	"opprettet_dato" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "varsler" (
+CREATE TABLE IF NOT EXISTS "varsler" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"user_id" integer NOT NULL,
 	"alarm_id" integer,
@@ -172,7 +172,7 @@ CREATE TABLE "varsler" (
 	"opprettet_dato" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "borettslag_medlemmer" (
+CREATE TABLE IF NOT EXISTS "borettslag_medlemmer" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"borettslag_id" integer NOT NULL,
 	"user_id" integer,
@@ -182,7 +182,7 @@ CREATE TABLE "borettslag_medlemmer" (
 	"lagt_til_dato" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "borettslag" (
+CREATE TABLE IF NOT EXISTS "borettslag" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"navn" text NOT NULL,
 	"orgnummer" text,
@@ -196,7 +196,7 @@ CREATE TABLE "borettslag" (
 	"opprettet_dato" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "gavekorter" (
+CREATE TABLE IF NOT EXISTS "gavekorter" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"kode" text NOT NULL,
 	"belop" integer NOT NULL,
@@ -212,7 +212,7 @@ CREATE TABLE "gavekorter" (
 	CONSTRAINT "gavekorter_kode_unique" UNIQUE("kode")
 );
 --> statement-breakpoint
-CREATE TABLE "bytte_foresporsel" (
+CREATE TABLE IF NOT EXISTS "bytte_foresporsel" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"fra_user_id" integer NOT NULL,
 	"til_user_id" integer NOT NULL,
@@ -222,7 +222,7 @@ CREATE TABLE "bytte_foresporsel" (
 	"behandlet_dato" timestamp with time zone
 );
 --> statement-breakpoint
-CREATE TABLE "bytteprofiler" (
+CREATE TABLE IF NOT EXISTS "bytteprofiler" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"user_id" integer NOT NULL,
 	"navarende_bydel" text NOT NULL,
@@ -233,7 +233,7 @@ CREATE TABLE "bytteprofiler" (
 	"opprettet_dato" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "partnere" (
+CREATE TABLE IF NOT EXISTS "partnere" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"partner_id" text NOT NULL,
 	"navn" text NOT NULL,
@@ -246,7 +246,7 @@ CREATE TABLE "partnere" (
 	CONSTRAINT "partnere_partner_id_unique" UNIQUE("partner_id")
 );
 --> statement-breakpoint
-CREATE TABLE "widget_klikk" (
+CREATE TABLE IF NOT EXISTS "widget_klikk" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"partner_id" text NOT NULL,
 	"booking_id" integer,
@@ -254,7 +254,7 @@ CREATE TABLE "widget_klikk" (
 	"opprettet_dato" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "kalender_integrasjoner" (
+CREATE TABLE IF NOT EXISTS "kalender_integrasjoner" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"user_id" integer NOT NULL,
 	"plass_id" integer,
@@ -269,7 +269,7 @@ CREATE TABLE "kalender_integrasjoner" (
 	"opprettet_dato" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "arrangement_aktiveringer" (
+CREATE TABLE IF NOT EXISTS "arrangement_aktiveringer" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"arrangement_id" integer NOT NULL,
 	"plass_id" integer NOT NULL,
@@ -278,7 +278,7 @@ CREATE TABLE "arrangement_aktiveringer" (
 	"aktivert_dato" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "arrangementer" (
+CREATE TABLE IF NOT EXISTS "arrangementer" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"slug" text NOT NULL,
 	"navn" text NOT NULL,
@@ -299,14 +299,14 @@ CREATE TABLE "arrangementer" (
 	CONSTRAINT "arrangementer_slug_unique" UNIQUE("slug")
 );
 --> statement-breakpoint
-CREATE TABLE "lanseringsliste" (
+CREATE TABLE IF NOT EXISTS "lanseringsliste" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"epost" varchar(255) NOT NULL,
 	"opprettet_dato" timestamp with time zone DEFAULT now() NOT NULL,
 	CONSTRAINT "lanseringsliste_epost_unique" UNIQUE("epost")
 );
 --> statement-breakpoint
-CREATE TABLE "dac7_rapporter" (
+CREATE TABLE IF NOT EXISTS "dac7_rapporter" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"year" integer NOT NULL,
 	"antall_utleiere" integer NOT NULL,
