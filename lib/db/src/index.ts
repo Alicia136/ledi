@@ -2,6 +2,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
 import pg from "pg";
 import path from "path";
+import { fileURLToPath } from "url";
 import * as schema from "./schema";
 
 const { Pool } = pg;
@@ -16,7 +17,10 @@ export const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 export const db = drizzle(pool, { schema });
 
 export async function runMigrations(): Promise<void> {
-  const migrationsFolder = path.resolve(process.cwd(), "lib/db/migrations");
+  // When bundled into artifacts/api-server/dist/index.mjs, __dirname is
+  // .../artifacts/api-server/dist — go up 3 levels to reach workspace root.
+  const __dirname = path.dirname(fileURLToPath(import.meta.url));
+  const migrationsFolder = path.resolve(__dirname, "../../../lib/db/migrations");
   try {
     await migrate(db, { migrationsFolder });
   } catch (err: unknown) {
