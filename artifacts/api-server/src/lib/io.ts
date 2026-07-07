@@ -46,17 +46,7 @@ export function adjustCityStat(by: string, delta: number): void {
 }
 
 let _activityId = 0;
-const ACTIVITY_NAMES: Record<string, string[]> = {
-  "Oslo":       ["Garasjeplass Frogner", "Parkeringsplass Aker Brygge", "Bod Grünerløkka", "Elbilplass Majorstua"],
-  "Bergen":     ["Parkeringsplass Sentrum", "Garasje Bergenhus", "Bod Sandviken"],
-  "Trondheim":  ["Parkering Midtbyen", "Bod Nedre Elvehavn", "Garasje Lade"],
-  "Stavanger":  ["Parkering Stavanger S", "Bod Lagårdsveien", "Garasje Paradis"],
-  "Tromsø":     ["Parkering Sentrum", "Garasje Giæverbukta", "Bod Langnes"],
-};
-
-export function emitActivityFeed(spaceId: number, by: string, action: ActivityEvent["action"]): void {
-  const names = ACTIVITY_NAMES[by] ?? ACTIVITY_NAMES["Oslo"];
-  const tittel = names[Math.floor(Math.random() * names.length)];
+export function emitActivityFeed(spaceId: number, by: string, tittel: string, action: ActivityEvent["action"]): void {
   const event: ActivityEvent = {
     id: ++_activityId,
     by,
