@@ -294,6 +294,14 @@ export default function Navbar({ onOpenRegisterPanel }: NavbarProps) {
                             <LayoutDashboard size={15} /> {userDashLabel}
                           </span>
                         </Link>
+                        <Link href="/profil">
+                          <span
+                            className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-white/70 hover:text-white hover:bg-white/6 transition-all cursor-pointer"
+                            onClick={() => setUserOpen(false)}
+                          >
+                            <User size={15} /> Min profil
+                          </span>
+                        </Link>
                         {user.rolle === "utleier" && (
                           <Link href="/skatterapport">
                             <span
