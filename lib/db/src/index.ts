@@ -17,7 +17,13 @@ export const db = drizzle(pool, { schema });
 
 export async function runMigrations(): Promise<void> {
   const migrationsFolder = path.resolve(process.cwd(), "lib/db/migrations");
-  await migrate(db, { migrationsFolder });
+  try {
+    await migrate(db, { migrationsFolder });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (msg.includes("already exists")) return;
+    throw err;
+  }
 }
 
 export * from "./schema";
