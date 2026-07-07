@@ -36,6 +36,7 @@ import KontraktPage from "@/pages/kontrakt";
 import ForgotPasswordPage from "@/pages/forgot-password";
 import ResetPasswordPage from "@/pages/reset-password";
 import VerifyEmailPage from "@/pages/verify-email";
+import ProfilPage from "@/pages/profil";
 import Footer from "@/components/Footer";
 
 const queryClient = new QueryClient({
@@ -77,6 +78,7 @@ function Router() {
       <Route path="/glemt-passord" component={ForgotPasswordPage} />
       <Route path="/nytt-passord" component={ResetPasswordPage} />
       <Route path="/bekreft-epost" component={VerifyEmailPage} />
+      <Route path="/profil" component={ProfilPage} />
       <Route path="/personvern">
         <LegalPage type="personvern" />
       </Route>
