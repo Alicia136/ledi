@@ -38,7 +38,7 @@ if (process.env.NODE_ENV === "production") {
   const distPath = path.resolve(process.cwd(), "artifacts/spaceli/dist/public");
   if (existsSync(distPath)) {
     app.use(express.static(distPath));
-    app.get("*", (_req, res) => {
+    app.get("/{*path}", (_req, res) => {
       res.sendFile(path.join(distPath, "index.html"));
     });
   }
